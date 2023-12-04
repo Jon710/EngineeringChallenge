@@ -1,5 +1,5 @@
-import {useState, useEffect, useMemo, useCallback} from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useState, useEffect, useCallback } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export const useMachineData = () => {
   const [machineData, setMachineData] = useState(undefined);
@@ -11,7 +11,7 @@ export const useMachineData = () => {
 
   const loadMachineData = useCallback(async () => {
     try {
-      const storedMachineData = await AsyncStorage.getItem('machineData');
+      const storedMachineData = await AsyncStorage.getItem("machineData");
 
       if (storedMachineData) {
         // Parse stored machine data and set it in state
@@ -29,7 +29,7 @@ export const useMachineData = () => {
   const resetMachineData = useCallback(async () => {
     try {
       // Clear the machine data from local storage
-      await AsyncStorage.removeItem('machineData');
+      await AsyncStorage.removeItem("machineData");
       setMachineData(undefined);
       // You can also clear other related data if needed
     } catch (error) {
@@ -44,7 +44,7 @@ export const useMachineData = () => {
       setMachineData(newMachineData);
 
       // Persist the updated machine data to local storage
-      await AsyncStorage.setItem('machineData', JSON.stringify(newMachineData));
+      await AsyncStorage.setItem("machineData", JSON.stringify(newMachineData));
     } catch (error) {
       console.error(error);
       // Handle storage saving error
@@ -67,15 +67,15 @@ export const useMachineData = () => {
 
         // Persist the updated machine data to local storage
         await AsyncStorage.setItem(
-          'machineData',
-          JSON.stringify(newMachineData),
+          "machineData",
+          JSON.stringify(newMachineData)
         );
       } catch (error) {
         console.error(error);
         // Handle storage saving error
       }
     },
-    [machineData],
+    [machineData]
   );
 
   return {
