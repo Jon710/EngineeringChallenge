@@ -1,4 +1,4 @@
-import {Request} from 'express';
+import { Request } from "express";
 import {
   AssemblyLinePart,
   MachineType,
@@ -6,23 +6,10 @@ import {
   QualityControlStationPart,
   WeldingRobotPart,
   partInfo,
-} from '../native-app/data/types';
-import {calculateMachineHealth} from './calculations';
+} from "../native-app/data/types";
+import { calculateMachineHealth } from "./calculations";
 
 export const getMachineHealth = (req: Request) => {
-  /* Assuming the request body contains the machine's name and parts data in the format of
-  {
-    "machines": {
-      "assemblyLine": {
-        "alignmentAccuracy": 0.5
-      },
-      "weldingRobot": {
-        "vibrationLevel": 4.0,
-        "electrodeWear": 0.8,
-      }
-    }
-  }
-  */
   const {
     machines,
   }: {
@@ -38,9 +25,7 @@ export const getMachineHealth = (req: Request) => {
     >;
   } = req.body;
 
-  if (!machines) {
-    return {error: 'Invalid input format'};
-  }
+  if (!machines) return { error: "Invalid input format" };
 
   const machineScores: {
     [key in MachineType]?: string;
@@ -70,12 +55,13 @@ export const getMachineHealth = (req: Request) => {
           value: parseFloat(machine[partNameTyped]),
         });
         return parts;
-      }, []),
+      }, [])
     );
 
     machineScores[machineName as MachineType] = machineScore.toFixed(2);
 
     factoryScore += machineScore;
+    
     machineCount++;
   }
 

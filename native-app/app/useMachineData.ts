@@ -54,18 +54,14 @@ export const useMachineData = () => {
   const setScores = useCallback(
     async (newScores) => {
       try {
-        if (!machineData) {
-          return;
-        }
+        if (!machineData) return;
 
         const newMachineData = JSON.parse(JSON.stringify(machineData)); // Deep copy machine parts
 
         newMachineData.scores = newScores;
 
-        // Update the state with the new machine data
         setMachineData(newMachineData);
 
-        // Persist the updated machine data to local storage
         await AsyncStorage.setItem(
           "machineData",
           JSON.stringify(newMachineData)

@@ -1,7 +1,5 @@
 import React, { useCallback, useState } from "react";
-import { Button, Platform, StyleSheet, TextInput } from "react-native";
-
-import { Text, View } from "./Themed";
+import { Button, StyleSheet, TextInput, Text, View } from "react-native";
 import { MachineType } from "../data/types";
 import { useMachineData } from "../app/useMachineData";
 import { useFocusEffect } from "expo-router";
@@ -76,10 +74,6 @@ export default function EditScreenInfo() {
     },
   ];
 
-  const apiUrl: string = `http://${
-    Platform?.OS === "android" ? "10.0.2.2" : "localhost"
-  }:3001/machine-health`;
-
   const savePart = useCallback(async () => {
     try {
       const newMachineData = machineData
@@ -94,9 +88,7 @@ export default function EditScreenInfo() {
 
       await updateMachineData(newMachineData);
       setIsSaved(true);
-      setTimeout(() => {
-        setIsSaved(false);
-      }, 2000);
+      setTimeout(() => setIsSaved(false), 2000);
     } catch (error) {
       console.error(error);
       throw error; // Handle API errors appropriately
@@ -138,40 +130,6 @@ export default function EditScreenInfo() {
 }
 
 const styles = StyleSheet.create({
-  getStartedContainer: {
-    alignItems: "center",
-    marginHorizontal: 50,
-  },
-  homeScreenFilename: {
-    marginVertical: 7,
-  },
-  codeHighlightContainer: {
-    borderRadius: 3,
-    paddingHorizontal: 4,
-  },
-  getStartedText: {
-    fontSize: 17,
-    lineHeight: 24,
-    textAlign: "center",
-  },
-  helpContainer: {
-    marginTop: 15,
-    marginHorizontal: 20,
-    alignItems: "center",
-  },
-  helpLink: {
-    paddingVertical: 15,
-  },
-  helpLinkText: {
-    textAlign: "center",
-  },
-  container: {
-    flex: 1,
-    padding: 20,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
-  },
   label: {
     fontSize: 18,
     marginBottom: 10,

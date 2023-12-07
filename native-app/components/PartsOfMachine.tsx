@@ -1,15 +1,5 @@
-import React, {useCallback, useEffect, useState} from 'react';
-import {Button, Platform, StyleSheet, TextInput} from 'react-native';
-
-import {Text, View} from './Themed';
-import axios from 'axios';
-import Constants from 'expo-constants';
-import RNPickerSelect from 'react-native-picker-select';
-import machineData from '../data/machineData.json';
-import {MachineType} from '../data/types';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import {useMachineData} from '../app/useMachineData';
-import {useFocusEffect} from 'expo-router';
+import React from "react";
+import { StyleSheet, Text } from "react-native";
 
 export const PartsOfMachine = ({
   machineName,
@@ -35,8 +25,5 @@ export const PartsOfMachine = ({
 };
 
 const styles = StyleSheet.create({
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
+  title: { fontSize: 20, fontWeight: "bold" },
 });

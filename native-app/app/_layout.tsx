@@ -1,15 +1,10 @@
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-import {
-  DarkTheme,
-  DefaultTheme,
-  ThemeProvider,
-} from "@react-navigation/native";
 import { useFonts } from "expo-font";
 import { SplashScreen, Stack } from "expo-router";
 import { useEffect } from "react";
-import { useColorScheme } from "react-native";
+import { Provider, useAuth } from "./context/auth";
+import { MachinesProvider } from "./context/machines";
 
-// Catch any errors thrown by the Layout component.
 export { ErrorBoundary } from "expo-router";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
@@ -27,25 +22,29 @@ export default function RootLayout() {
   }, [error]);
 
   useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
-    }
+    if (loaded) SplashScreen.hideAsync();
   }, [loaded]);
 
   if (!loaded) return null;
 
-  return <RootLayoutNav />;
+  return (
+    <Provider>
+      <RootLayoutNav />
+    </Provider>
+  );
 }
 
 function RootLayoutNav() {
-  const colorScheme = useColorScheme();
+  const { authInitialized, user } = useAuth();
+
+  if (!authInitialized && !user) return null;
 
   return (
-    <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        {/* <Stack.Screen name="modal" options={{ presentation: 'modal' }} /> */}
+    <MachinesProvider user={user}>
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="(tabs)" />
       </Stack>
-    </ThemeProvider>
+    </MachinesProvider>
   );
 }
+

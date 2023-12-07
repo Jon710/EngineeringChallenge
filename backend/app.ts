@@ -1,22 +1,32 @@
-import express, { Request, Response } from "express";
-import { getMachineHealth } from "./machineHealth";
+import express, { Express } from "express";
+import inject from "./src/config/di";
+import knex from "knex";
+import knexfile from "./src/config/knexfile";
 
-const app = express();
-const port = 3333;
+const pg = knex(knexfile.config.pg);
 
-// Middleware to parse JSON request bodies
-app.use(express.json());
-
-app.post("/machine-health", (req: Request, res: Response) => {
-  const result = getMachineHealth(req);
-
-  if (result.error) {
-    res.status(400).json(result);
-  } else {
-    res.json(result);
+async function assertPGConnection() {
+  try {
+    return await pg.raw("select 1+1 as result");
+  } catch (err) {
+    console.log("[Fatal] Failed to establish DB connection! Exiting...");
+    console.log(err);
+    process.exit(1);
   }
-});
+}
 
-app.listen(port, () => {
-  console.log(`API is listening at http://localhost:${port}`);
-});
+// here we could add more middlewares: cors, helmet, logger etc...
+function middlewares(server: Express) {
+  server.use(express.json());
+}
+
+async function createServer() {
+  const server = express();
+  middlewares(server);
+  inject({ server, db: pg });
+  const res = await assertPGConnection();
+  console.log(res.rows);
+  return server;
+}
+
+export default createServer();

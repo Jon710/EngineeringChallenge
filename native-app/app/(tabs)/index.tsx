@@ -1,15 +1,18 @@
-import { Button, StyleSheet } from "react-native";
-import { Text, View } from "../../components/Themed";
+import { Alert, Button, StyleSheet, Text, View } from "react-native";
 import { Link, useFocusEffect } from "expo-router";
 import { useMachineData } from "../useMachineData";
-import { useCallback, useState } from "react";
+import { useCallback } from "react";
 import { PartsOfMachine } from "../../components/PartsOfMachine";
 import { MachineScore } from "../../components/MachineScore";
-import api from "../../services/api";
+import api from "../services/api";
+import { useAuth } from "../../app/context/auth";
+import { useMachines } from "../context/machines";
 
-export default function StateScreen() {
+export default function MachineState() {
+  const { user } = useAuth();
   const { machineData, resetMachineData, loadMachineData, setScores } =
     useMachineData();
+  const { setMachines } = useMachines();
 
   //Doing this because we're not using central state like redux
   useFocusEffect(
@@ -18,7 +21,7 @@ export default function StateScreen() {
     }, [])
   );
 
-  const calculateHealth = useCallback(async () => {
+  const calculateHealth = async () => {
     try {
       const response = await api.post("/machine-health", {
         machines: machineData?.machines,
@@ -30,18 +33,43 @@ export default function StateScreen() {
       console.log(
         `There was an error calculating health. ${
           error.toString() === "AxiosError: Network Error"
-            ? "Is the api server started?"
+            ? "Is the api running?"
             : error
         }`
       );
     }
-  }, [machineData]);
+  };
+
+  const saveMachineData = async () => {
+    try {
+      const response = await api.post("/machines", {
+        machines: machineData,
+        userId: user?.id,
+      });
+
+      const { data } = await api.get(`/user/${user.id}/machine-state`);
+
+      setMachines(data);
+
+      Alert.alert("Success", response.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
     <View style={styles.container}>
-      <View style={styles.separator} />
+      <View
+        style={{ flexDirection: "row", alignItems: "center", marginTop: 10 }}
+      >
+        <View style={{ flex: 1, height: 1, backgroundColor: "black" }} />
+        <View>
+          <Text style={{ width: 75, textAlign: "center" }}>MACHINES</Text>
+        </View>
+        <View style={{ flex: 1, height: 1, backgroundColor: "black" }} />
+      </View>
       {!machineData && (
-        <Link href="/two" style={styles.link}>
+        <Link href="/(tabs)/two" style={styles.link}>
           <Text style={styles.linkText}>
             Please log a part to check machine health
           </Text>
@@ -66,12 +94,20 @@ export default function StateScreen() {
             parts={machineData?.machines?.qualityControlStation}
           />
           <View
-            style={styles.separator}
-            lightColor="#eee"
-            darkColor="rgba(255,255,255,0.1)"
-          />
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              marginTop: 10,
+            }}
+          >
+            <View style={{ flex: 1, height: 1, backgroundColor: "black" }} />
+            <View>
+              <Text style={{ width: 70, textAlign: "center" }}>SCORES</Text>
+            </View>
+            <View style={{ flex: 1, height: 1, backgroundColor: "black" }} />
+          </View>
           <Text style={styles.title}>Factory Health Score</Text>
-          <Text style={styles.text}>
+          <Text>
             {machineData?.scores?.factory
               ? machineData?.scores?.factory
               : "Not yet calculated"}
@@ -91,18 +127,21 @@ export default function StateScreen() {
         </>
       )}
       <View
-        style={styles.separator}
-        lightColor="#eee"
-        darkColor="rgba(255,255,255,0.1)"
-      />
-      <Button title="Calculate Health" onPress={calculateHealth} />
-      <View style={styles.resetButton}>
-        <Button
-          title="Reset Machine Data"
-          onPress={async () => await resetMachineData()}
-          color="#FF0000"
-        />
+        style={{ flexDirection: "row", alignItems: "center", marginTop: 15 }}
+      >
+        <View style={{ flex: 1, height: 1, backgroundColor: "black" }} />
       </View>
+      <Button title="Calculate Health" onPress={calculateHealth} />
+      <Button
+        title="Save Machine Data"
+        color="green"
+        onPress={saveMachineData}
+      />
+      <Button
+        title="Reset Machine Data"
+        onPress={async () => await resetMachineData()}
+        color="#FF0000"
+      />
     </View>
   );
 }
@@ -120,12 +159,6 @@ const styles = StyleSheet.create({
     fontSize: 17,
     fontWeight: "bold",
   },
-  separator: {
-    marginVertical: 20,
-    height: 1,
-    width: "80%",
-  },
-  text: {},
   link: {
     paddingBottom: 15,
   },
