@@ -16,3 +16,11 @@ cd native-app
 yarn
 yarn start
 ```
+## API DOCS
+This is only a helper with the most important API endpoints.
+
+```
+POST /machine-health - saves health scores (in memory)
+POST /machines - saves a json with all health scores from different machines to database
+GET /user/:userId/machine-state - returns machine scores of a given user basend on the current date to display on a graph
+```
