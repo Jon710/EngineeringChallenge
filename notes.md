@@ -15,6 +15,8 @@ Things I'd do if I had more time
 - I used the repository pattern architecture because it decouples functionalities. It also helps in maintenance and testing when the app grows.
 
 - I chose Postgres because I'm more familiar with it. However, given the scale of the problem, it could've been solved with any ohter database such as MongoDB.
+I could've saved the scores in different rows, but I went for a jsonb data type because they are related and would be easier to query
+them together and build the grap
 
 - React Context was my choice for state management for 2 reasons:
  1) it comes out of the box and I aim for simplicity
